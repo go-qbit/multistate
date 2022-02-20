@@ -3,11 +3,13 @@ package multistate
 import (
 	"context"
 	"regexp"
+	"sort"
 	"strings"
 
-	"github.com/go-qbit/multistate/expr"
 	"github.com/go-qbit/qerror"
 	"github.com/go-qbit/rbac"
+
+	"github.com/go-qbit/multistate/expr"
 )
 
 var reStateAction = regexp.MustCompile(`^[a-z0-9_-]+$`)
@@ -18,6 +20,12 @@ type Multistate struct {
 	actionsMap     map[string]action
 	statesActions  map[uint64]map[string]uint64
 	lastStateBit   uint8
+}
+
+type StateFlag struct {
+	Id      string
+	Bit     uint8
+	Caption string
 }
 
 func New(emptyStateName string) *Multistate {
@@ -171,19 +179,42 @@ func (m *Multistate) DoAction(ctx context.Context, model IModel, action string, 
 	return newState, model.EndAction(ctx, nil)
 }
 
-func (m *Multistate) GetStateName(id uint64) string {
+func (m *Multistate) GetStateFlags(id uint64) []StateFlag {
 	if id == 0 {
+		return []StateFlag{}
+	}
+
+	var res []StateFlag
+	for _, state := range m.statesMap {
+		if id&(1<<state.bit) > 0 {
+			res = append(res, StateFlag{
+				Id:      state.id,
+				Bit:     state.bit,
+				Caption: state.caption,
+			})
+		}
+	}
+
+	sort.Slice(res, func(i, j int) bool {
+		return res[i].Bit < res[j].Bit
+	})
+
+	return res
+}
+
+func (m *Multistate) GetStateName(id uint64) string {
+	flags := m.GetStateFlags(id)
+
+	if len(flags) == 0 {
 		if m.emptyStateName == "" {
 			return "empty"
 		}
 		return m.emptyStateName
 	}
 
-	var stateNames []string
-	for _, state := range m.statesMap {
-		if id&(1<<state.bit) > 0 {
-			stateNames = append(stateNames, state.caption)
-		}
+	stateNames := make([]string, len(flags))
+	for i, flag := range flags {
+		stateNames[i] = flag.Caption
 	}
 
 	return strings.Join(stateNames, ".\n") + "."

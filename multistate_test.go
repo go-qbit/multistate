@@ -4,9 +4,10 @@ import (
 	"context"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	"github.com/go-qbit/multistate"
 	. "github.com/go-qbit/multistate/expr"
-	"github.com/stretchr/testify/assert"
 )
 
 type testModel struct {
