@@ -17,9 +17,9 @@ var reStateAction = regexp.MustCompile(`^[a-z0-9_-]+$`)
 type Multistate struct {
 	emptyStateName string
 	statesMap      map[string]state
+	statesBitsMap  map[uint8]state
 	actionsMap     map[string]action
 	statesActions  map[uint64]map[string]uint64
-	lastStateBit   uint8
 }
 
 type StateFlag struct {
@@ -32,23 +32,30 @@ func New(emptyStateName string) *Multistate {
 	return &Multistate{
 		emptyStateName: emptyStateName,
 		statesMap:      make(map[string]state),
+		statesBitsMap:  make(map[uint8]state),
 		actionsMap:     make(map[string]action),
 	}
 }
 
-func (m *Multistate) AddState(id, caption string) state {
+func (m *Multistate) AddState(bit uint8, id, caption string) state {
 	if !reStateAction.MatchString(id) {
 		panic(qerror.Errorf("Invalid characters in state id '%s', must be %s", id, reStateAction.String()))
+	}
+
+	if bit > 63 {
+		panic(qerror.Errorf("Bit must be less than 64", id))
 	}
 
 	if _, exists := m.statesMap[id]; id == "empty" || id == "any" || exists {
 		panic(qerror.Errorf("State '%s' already exists", id))
 	}
 
-	s := state{id, caption, m.lastStateBit}
-	m.statesMap[id] = s
+	if _, exists := m.statesBitsMap[bit]; exists {
+		panic(qerror.Errorf("Bit '%d' already busy", bit))
+	}
 
-	m.lastStateBit++
+	s := state{id, caption, bit}
+	m.statesMap[id] = s
 
 	return s
 }

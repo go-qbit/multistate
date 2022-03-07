@@ -34,12 +34,12 @@ func (*testModel) EndAction(ctx context.Context, err error) error {
 func TestMultistate_DoAction(t *testing.T) {
 	mst := multistate.New("New")
 
-	signedA := mst.AddState("signed_a", "Signed A")
-	signedB := mst.AddState("signed_b", "Signed B")
-	signedC := mst.AddState("signed_c", "Signed C")
-	signedD := mst.AddState("signed_d", "Signed D")
-	signedE := mst.AddState("signed_e", "Signed E")
-	signedF := mst.AddState("signed_f", "Signed F")
+	signedA := mst.AddState(0, "signed_a", "Signed A")
+	signedB := mst.AddState(1, "signed_b", "Signed B")
+	signedC := mst.AddState(2, "signed_c", "Signed C")
+	signedD := mst.AddState(3, "signed_d", "Signed D")
+	signedE := mst.AddState(4, "signed_e", "Signed E")
+	signedF := mst.AddState(5, "signed_f", "Signed F")
 
 	mst.AddAction(
 		"sign_a", "Sign A", Empty(),
@@ -122,12 +122,12 @@ func TestMultistate_DoAction(t *testing.T) {
 func TestMultistate_DoAction2(t *testing.T) {
 	mst := multistate.New("New")
 
-	signedA := mst.AddState("signed_a", "Signed A")
-	signedB := mst.AddState("signed_b", "Signed B")
-	signedC := mst.AddState("signed_c", "Signed C")
-	signedD := mst.AddState("signed_d", "Signed D")
-	signedE := mst.AddState("signed_e", "Signed E")
-	signedF := mst.AddState("signed_f", "Signed F")
+	signedA := mst.AddState(0, "signed_a", "Signed A")
+	signedB := mst.AddState(1, "signed_b", "Signed B")
+	signedC := mst.AddState(2, "signed_c", "Signed C")
+	signedD := mst.AddState(3, "signed_d", "Signed D")
+	signedE := mst.AddState(4, "signed_e", "Signed E")
+	signedF := mst.AddState(5, "signed_f", "Signed F")
 
 	mst.AddAction(
 		"sign_a", "Sign A", Empty(),
