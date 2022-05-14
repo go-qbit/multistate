@@ -4,22 +4,23 @@ import (
 	"context"
 
 	"github.com/go-qbit/multistate/expr"
-	"github.com/go-qbit/rbac"
 )
 
 type action struct {
-	id         string
-	caption    string
-	from       expr.IExpression
-	set        []uint64
-	reset      []uint64
-	do         ActionDoFunc
-	permission *rbac.Permission
+	id          string
+	caption     string
+	from        expr.IExpression
+	set         []uint64
+	reset       []uint64
+	do          ActionDoFunc
+	isAvailable AvailableFunc
 }
 
-type ActionDoFunc func(ctx context.Context, model IModel, opts ...interface{}) error
+type AvailableFunc func(ctx context.Context) bool
 
-type IModel interface {
+type ActionDoFunc func(ctx context.Context, entity Entity, opts ...interface{}) error
+
+type Entity interface {
 	StartAction(ctx context.Context) (context.Context, error)
 	GetState(ctx context.Context) (uint64, error)
 	SetState(ctx context.Context, newState uint64, params ...interface{}) error
