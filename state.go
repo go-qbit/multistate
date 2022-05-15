@@ -1,8 +1,10 @@
 package multistate
 
-type IState interface {
+type State interface {
 	GetStateId() string
 }
+
+type States []State
 
 type state struct {
 	id      string

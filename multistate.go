@@ -68,7 +68,7 @@ func (m *Multistate) MustAddState(bit uint8, id, caption string) *state {
 	return s
 }
 
-func (m *Multistate) AddAction(id, caption string, from expr.IExpression, set, reset []IState, onDo ActionDoFunc, isAvailable AvailableFunc) error {
+func (m *Multistate) AddAction(id, caption string, from expr.Expression, set, reset States, onDo ActionDoFunc, isAvailable AvailableFunc) error {
 	if !reStateAction.MatchString(id) {
 		return fmt.Errorf("invalid characters in action id '%s', must be %s", id, reStateAction.String())
 	}
@@ -108,7 +108,7 @@ func (m *Multistate) AddAction(id, caption string, from expr.IExpression, set, r
 	return nil
 }
 
-func (m *Multistate) MustAddAction(id, caption string, from expr.IExpression, set, reset []IState, onDo ActionDoFunc, isAvailable AvailableFunc) {
+func (m *Multistate) MustAddAction(id, caption string, from expr.Expression, set, reset []State, onDo ActionDoFunc, isAvailable AvailableFunc) {
 	if err := m.AddAction(id, caption, from, set, reset, onDo, isAvailable); err != nil {
 		panic(err)
 	}

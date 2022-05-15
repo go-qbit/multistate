@@ -1,12 +1,12 @@
 package expr
 
-type IExpression interface {
+type Expression interface {
 	Eval(v uint64) bool
 }
 
-type andExpr []IExpression
+type andExpr []Expression
 
-func And(e1, e2 IExpression, eN ...IExpression) andExpr {
+func And(e1, e2 Expression, eN ...Expression) andExpr {
 	if len(eN) == 0 {
 		return andExpr{e1, e2}
 	}
@@ -24,9 +24,9 @@ func (e andExpr) Eval(v uint64) bool {
 	return true
 }
 
-type orExpr []IExpression
+type orExpr []Expression
 
-func Or(e1, e2 IExpression, eN ...IExpression) orExpr {
+func Or(e1, e2 Expression, eN ...Expression) orExpr {
 	if len(eN) == 0 {
 		return orExpr{e1, e2}
 	}
@@ -45,10 +45,10 @@ func (e orExpr) Eval(v uint64) bool {
 }
 
 type notExpr struct {
-	e IExpression
+	e Expression
 }
 
-func Not(e IExpression) notExpr {
+func Not(e Expression) notExpr {
 	return notExpr{e}
 }
 

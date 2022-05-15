@@ -9,7 +9,7 @@ import (
 type action struct {
 	id          string
 	caption     string
-	from        expr.IExpression
+	from        expr.Expression
 	set         []uint64
 	reset       []uint64
 	do          ActionDoFunc
