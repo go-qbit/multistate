@@ -2,6 +2,7 @@ package multistate
 
 type State interface {
 	GetStateId() string
+	Eval(v uint64) bool
 }
 
 type States []State

@@ -44,7 +44,7 @@ func TestMultistate_DoAction(t *testing.T) {
 	mst.MustAddAction(
 		"sign_a", "Sign A", Empty(),
 		multistate.States{signedA}, nil,
-		func(_ context.Context, _ multistate.Entity, _ ...interface{}) error {
+		func(_ context.Context, _ interface{}, _ ...interface{}) error {
 			return nil
 		},
 		nil,
@@ -53,7 +53,7 @@ func TestMultistate_DoAction(t *testing.T) {
 	mst.MustAddAction(
 		"sign_b", "Sign B", Empty(),
 		multistate.States{signedB}, nil,
-		func(_ context.Context, _ multistate.Entity, _ ...interface{}) error {
+		func(_ context.Context, _ interface{}, _ ...interface{}) error {
 			return nil
 		},
 		nil,
@@ -62,7 +62,7 @@ func TestMultistate_DoAction(t *testing.T) {
 	mst.MustAddAction(
 		"sign_c", "Sign C", And(Or(signedA, signedB), Not(signedC)),
 		multistate.States{signedC}, nil,
-		func(_ context.Context, _ multistate.Entity, _ ...interface{}) error {
+		func(_ context.Context, _ interface{}, _ ...interface{}) error {
 			return nil
 		},
 		nil,
@@ -71,7 +71,7 @@ func TestMultistate_DoAction(t *testing.T) {
 	mst.MustAddAction(
 		"sign_d", "Sign D", And(Or(signedC, signedE), Not(signedD)),
 		multistate.States{signedD}, nil,
-		func(_ context.Context, _ multistate.Entity, _ ...interface{}) error {
+		func(_ context.Context, _ interface{}, _ ...interface{}) error {
 			return nil
 		},
 		nil,
@@ -80,7 +80,7 @@ func TestMultistate_DoAction(t *testing.T) {
 	mst.MustAddAction(
 		"sign_e", "Sign E", And(Or(signedC, signedD), Not(signedE)),
 		multistate.States{signedE}, nil,
-		func(_ context.Context, _ multistate.Entity, _ ...interface{}) error {
+		func(_ context.Context, _ interface{}, _ ...interface{}) error {
 			return nil
 		},
 		nil,
@@ -89,7 +89,7 @@ func TestMultistate_DoAction(t *testing.T) {
 	mst.MustAddAction(
 		"sign_f", "Sign F", And(signedD, signedE, Not(signedF)),
 		multistate.States{signedF}, nil,
-		func(_ context.Context, _ multistate.Entity, _ ...interface{}) error {
+		func(_ context.Context, _ interface{}, _ ...interface{}) error {
 			return nil
 		},
 		nil,
@@ -132,7 +132,7 @@ func TestMultistate_DoAction2(t *testing.T) {
 	mst.MustAddAction(
 		"sign_a", "Sign A", Empty(),
 		multistate.States{signedA}, nil,
-		func(_ context.Context, _ multistate.Entity, _ ...interface{}) error {
+		func(_ context.Context, _ interface{}, _ ...interface{}) error {
 			return nil
 		},
 		nil,
@@ -141,7 +141,7 @@ func TestMultistate_DoAction2(t *testing.T) {
 	mst.MustAddAction(
 		"sign_b", "Sign B", Empty(),
 		multistate.States{signedB}, nil,
-		func(_ context.Context, _ multistate.Entity, _ ...interface{}) error {
+		func(_ context.Context, _ interface{}, _ ...interface{}) error {
 			return nil
 		},
 		nil,
@@ -150,7 +150,7 @@ func TestMultistate_DoAction2(t *testing.T) {
 	mst.MustAddAction(
 		"sign_c", "Sign C", And(Or(signedA, signedB), Not(signedC)),
 		multistate.States{signedC}, multistate.States{signedA, signedB},
-		func(_ context.Context, _ multistate.Entity, _ ...interface{}) error {
+		func(_ context.Context, _ interface{}, _ ...interface{}) error {
 			return nil
 		},
 		nil,
@@ -159,7 +159,7 @@ func TestMultistate_DoAction2(t *testing.T) {
 	mst.MustAddAction(
 		"sign_d", "Sign D", And(Or(signedC, signedE), Not(signedD)),
 		multistate.States{signedD}, multistate.States{signedC},
-		func(_ context.Context, _ multistate.Entity, _ ...interface{}) error {
+		func(_ context.Context, _ interface{}, _ ...interface{}) error {
 			return nil
 		},
 		nil,
@@ -168,7 +168,7 @@ func TestMultistate_DoAction2(t *testing.T) {
 	mst.MustAddAction(
 		"sign_e", "Sign E", And(Or(signedC, signedD), Not(signedE)),
 		multistate.States{signedE}, multistate.States{signedC},
-		func(_ context.Context, _ multistate.Entity, _ ...interface{}) error {
+		func(_ context.Context, _ interface{}, _ ...interface{}) error {
 			return nil
 		},
 		nil,
@@ -177,7 +177,7 @@ func TestMultistate_DoAction2(t *testing.T) {
 	mst.MustAddAction(
 		"sign_f", "Sign F", And(signedD, signedE, Not(signedF)),
 		multistate.States{signedF}, multistate.States{signedD, signedE},
-		func(_ context.Context, _ multistate.Entity, _ ...interface{}) error {
+		func(_ context.Context, _ interface{}, _ ...interface{}) error {
 			return nil
 		},
 		nil,

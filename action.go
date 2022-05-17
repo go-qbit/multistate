@@ -18,7 +18,7 @@ type action struct {
 
 type AvailableFunc func(ctx context.Context) bool
 
-type ActionDoFunc func(ctx context.Context, entity Entity, opts ...interface{}) error
+type ActionDoFunc func(ctx context.Context, id interface{}, opts ...interface{}) error
 
 type Entity interface {
 	StartAction(ctx context.Context) (context.Context, error)
