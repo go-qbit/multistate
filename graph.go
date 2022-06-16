@@ -8,6 +8,7 @@ import (
 	"math"
 	"os"
 	"os/exec"
+	"runtime"
 	"strconv"
 
 	"github.com/tmc/dot"
@@ -70,7 +71,11 @@ func (m *Multistate) GetGraphSVG() string {
 
 	outBuf := &bytes.Buffer{}
 
-	cmd := exec.Command("/usr/bin/dot", "-Tsvg")
+	pathToDot := "/usr/bin/dot"
+	if runtime.GOOS == "darwin" {
+		pathToDot = "/usr/local/bin/dot"
+	}
+	cmd := exec.Command(pathToDot, "-Tsvg")
 	cmd.Stdin = bytes.NewBuffer([]byte(g.String()))
 	cmd.Stdout = outBuf
 	cmd.Stderr = os.Stderr
