@@ -193,22 +193,22 @@ func (m *Multistate) DoAction(ctx context.Context, entity Entity, action string,
 
 	actions, exists := m.statesActions[curState]
 	if !exists {
-		return 0, entity.EndAction(ctx, fmt.Errorf("invalid state %d", curState))
+		return 0, entity.EndAction(ctx, fmt.Errorf("current state %d: %w", curState, ErrInvalidState))
 	}
 
 	newState, exists := actions[action]
 	if !exists {
-		return 0, entity.EndAction(ctx, fmt.Errorf("invalid action '%s' state %d", action, curState))
+		return 0, entity.EndAction(ctx, fmt.Errorf("action '%s', current state %d: %w", action, curState, ErrInvalidAction))
 	}
 
 	if onAction := m.actionsMap[action].do; onAction != nil {
 		if err := onAction(ctx, entity, opts...); err != nil {
-			return 0, entity.EndAction(ctx, err)
+			return 0, entity.EndAction(ctx, fmt.Errorf("%s: %w", err.Error(), ErrExecutionAction))
 		}
 	}
 
 	if err := entity.SetState(ctx, newState); err != nil {
-		return 0, entity.EndAction(ctx, err)
+		return 0, entity.EndAction(ctx, fmt.Errorf("%s: %w", err.Error(), ErrSetState))
 	}
 
 	return newState, entity.EndAction(ctx, nil)
