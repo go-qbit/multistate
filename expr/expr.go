@@ -44,6 +44,26 @@ func (e orExpr) Eval(v uint64) bool {
 	return false
 }
 
+type xorExpr []Expression
+
+func Xor(e1, e2 Expression, eN ...Expression) xorExpr {
+	if len(eN) == 0 {
+		return xorExpr{e1, e2}
+	}
+	return append(xorExpr{e1, e2}, eN...)
+}
+
+func (e xorExpr) Eval(v uint64) bool {
+	var c int
+	for _, expr := range e {
+		if expr.Eval(v) {
+			c++
+		}
+	}
+
+	return c == 1
+}
+
 type notExpr struct {
 	e Expression
 }
