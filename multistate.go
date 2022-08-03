@@ -258,3 +258,22 @@ func (m *Multistate) GetStateName(id uint64) string {
 func (m *Multistate) GetActionName(id string) string {
 	return m.actionsMap[id].caption
 }
+
+func (m *Multistate) GetStatesByActions(actions ...string) []uint64 {
+	set := make(map[uint64]struct{})
+
+	for _, action := range actions {
+		for state, mapact := range m.statesActions {
+			if _, exists := mapact[action]; exists {
+				set[state] = struct{}{}
+			}
+		}
+	}
+
+	ret := make([]uint64, 0, len(set))
+	for el := range set {
+		ret = append(ret, el)
+	}
+
+	return ret
+}
