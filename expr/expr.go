@@ -59,8 +59,10 @@ func (e xorExpr) Eval(v uint64) bool {
 		if expr.Eval(v) {
 			c++
 		}
+		if c > 1 {
+			return false
+		}
 	}
-
 	return c == 1
 }
 

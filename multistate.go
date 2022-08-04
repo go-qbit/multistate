@@ -274,6 +274,7 @@ func (m *Multistate) GetStatesByActions(actions ...string) []uint64 {
 	for el := range set {
 		ret = append(ret, el)
 	}
+	sort.Slice(ret, func(i, j int) bool { return ret[i] < ret[j] })
 
 	return ret
 }
