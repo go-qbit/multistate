@@ -27,7 +27,7 @@ type StateFlag struct {
 	Caption string
 }
 
-type OnDoCallback func(ctx context.Context, prevState, newState uint64, action string, opts ...interface{}) error
+type OnDoCallback func(ctx context.Context, entity Entity, prevState, newState uint64, action string, opts ...interface{}) error
 
 func New(emptyStateName string) *Multistate {
 	return &Multistate{
@@ -209,7 +209,7 @@ func (m *Multistate) DoAction(ctx context.Context, entity Entity, action string,
 	}
 
 	if m.onDo != nil {
-		if err := m.onDo(ctx, curState, newState, action, opts...); err != nil {
+		if err := m.onDo(ctx, entity, curState, newState, action, opts...); err != nil {
 			return 0, entity.EndAction(ctx, fmt.Errorf("%s: %w", err.Error(), ErrExecutionAction))
 		}
 	}
