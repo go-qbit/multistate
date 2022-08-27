@@ -18,6 +18,7 @@ type Multistate struct {
 	statesBitsMap  map[uint8]*state
 	actionsMap     map[string]*action
 	statesActions  map[uint64]map[string]uint64
+	onDo           OnDoCallback
 }
 
 type StateFlag struct {
@@ -26,6 +27,8 @@ type StateFlag struct {
 	Caption string
 }
 
+type OnDoCallback func(ctx context.Context, prevState, newState uint64, action string, opts ...interface{}) error
+
 func New(emptyStateName string) *Multistate {
 	return &Multistate{
 		emptyStateName: emptyStateName,
@@ -33,6 +36,10 @@ func New(emptyStateName string) *Multistate {
 		statesBitsMap:  make(map[uint8]*state),
 		actionsMap:     make(map[string]*action),
 	}
+}
+
+func (m *Multistate) SetOnDoCallback(cb OnDoCallback) {
+	m.onDo = cb
 }
 
 func (m *Multistate) AddState(bit uint8, id, caption string) (*state, error) {
@@ -199,6 +206,12 @@ func (m *Multistate) DoAction(ctx context.Context, entity Entity, action string,
 	newState, exists := actions[action]
 	if !exists {
 		return 0, entity.EndAction(ctx, fmt.Errorf("action '%s', current state %d: %w", action, curState, ErrInvalidAction))
+	}
+
+	if m.onDo != nil {
+		if err := m.onDo(ctx, curState, newState, action, opts...); err != nil {
+			return 0, entity.EndAction(ctx, fmt.Errorf("%s: %w", err.Error(), ErrExecutionAction))
+		}
 	}
 
 	if onAction := m.actionsMap[action].do; onAction != nil {

@@ -1,6 +1,7 @@
 package multistate
 
 import (
+	"context"
 	"fmt"
 	"reflect"
 	"regexp"
@@ -76,6 +77,12 @@ func NewFromStruct(s Implementation) *Multistate {
 			}
 
 			mst.MustAddAction(camelCaseToSnake(mt.Name[6:]), caption, action.From, action.Set, action.Reset, action.OnDo, action.IsAvailable)
+		} else if mt.Name == "OnDoAction" {
+			cb, ok := rvS.Method(i).Interface().(func(context.Context, uint64, uint64, string, ...interface{}) error)
+			if !ok {
+				panic(fmt.Sprintf("OnDoAction must fit OnDoCallback type "))
+			}
+			mst.SetOnDoCallback(cb)
 		}
 	}
 

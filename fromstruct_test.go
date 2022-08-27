@@ -1,6 +1,8 @@
 package multistate_test
 
 import (
+	"context"
+	"log"
 	"testing"
 
 	"github.com/go-qbit/multistate"
@@ -13,7 +15,12 @@ type impl struct {
 	S string
 }
 
-func (i *impl) Action1() multistate.Action {
+func (i *impl) OnDoAction(ctx context.Context, prevState, newState uint64, action string, opts ...interface{}) error {
+	log.Printf("%d -> %s -> %d", prevState, action, newState)
+	return nil
+}
+
+func (i *impl) ActionTest() multistate.Action {
 	return multistate.Action{
 		Caption: i.S + " action",
 		Set:     multistate.States{i.St2},
@@ -21,5 +28,11 @@ func (i *impl) Action1() multistate.Action {
 }
 
 func TestNew(t *testing.T) {
-	multistate.NewFromStruct(&impl{S: "ttt"})
+	m := multistate.NewFromStruct(&impl{S: "ttt"})
+
+	e := &testEntity{}
+	_, err := m.DoAction(context.Background(), e, "test")
+	if err != nil {
+		t.Error(err)
+	}
 }
