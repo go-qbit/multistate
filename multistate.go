@@ -13,12 +13,14 @@ import (
 var reStateAction = regexp.MustCompile(`^[a-z\d_-]+$`)
 
 type Multistate struct {
-	emptyStateName string
-	statesMap      map[string]*state
-	statesBitsMap  map[uint8]*state
-	actionsMap     map[string]*action
-	statesActions  map[uint64]map[string]uint64
-	onDo           OnDoCallback
+	emptyStateName  string
+	statesMap       map[string]*state
+	statesBitsMap   map[uint8]*state
+	actionsMap      map[string]*action
+	statesActions   map[uint64]map[string]uint64
+	clusters        []cluster
+	stateClusterMap map[uint64]*cluster
+	onDo            OnDoCallback
 }
 
 type StateFlag struct {
@@ -28,6 +30,12 @@ type StateFlag struct {
 }
 
 type OnDoCallback func(ctx context.Context, entity Entity, prevState, newState uint64, action string, opts ...interface{}) error
+
+type cluster struct {
+	id         uint8
+	name       string
+	expression expr.Expression
+}
 
 func New(emptyStateName string) *Multistate {
 	return &Multistate{
@@ -121,6 +129,14 @@ func (m *Multistate) MustAddAction(id, caption string, from expr.Expression, set
 	}
 }
 
+func (m *Multistate) AddCluster(name string, expr expr.Expression) {
+	m.clusters = append(m.clusters, cluster{
+		id:         uint8(len(m.clusters)),
+		name:       name,
+		expression: expr,
+	})
+}
+
 func (m *Multistate) Compile() error {
 	if m.statesActions != nil {
 		return fmt.Errorf("multistate is already compiled")
@@ -131,7 +147,7 @@ func (m *Multistate) Compile() error {
 
 	changed := true
 	for changed {
-		//println()
+		// println()
 		changed = false
 
 		for _, action := range m.actionsMap {
@@ -141,15 +157,15 @@ func (m *Multistate) Compile() error {
 						changed = true
 						newState := state
 						for _, v := range action.set {
-							//println("set", v)
+							// println("set", v)
 							newState |= v
 						}
 						for _, v := range action.reset {
 							newState &= v
-							//println("reset", v)
+							// println("reset", v)
 						}
 
-						//println("from", state, "to", newState, "by", action.id)
+						// println("from", state, "to", newState, "by", action.id)
 
 						actions[action.id] = newState
 						if _, exists := m.statesActions[newState]; !exists {
@@ -158,6 +174,19 @@ func (m *Multistate) Compile() error {
 					}
 				}
 			}
+		}
+	}
+
+	m.stateClusterMap = map[uint64]*cluster{}
+	for i, cluster := range m.clusters {
+		for state := range m.statesActions {
+			if !cluster.expression.Eval(state) {
+				continue
+			}
+			if c, exists := m.stateClusterMap[state]; exists {
+				return fmt.Errorf("The state %d exists at least in 2 clusters: %s and %s", state, c.name, cluster.name)
+			}
+			m.stateClusterMap[state] = &m.clusters[i]
 		}
 	}
 

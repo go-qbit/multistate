@@ -95,6 +95,9 @@ func TestMultistate_DoAction(t *testing.T) {
 		nil,
 	)
 
+	mst.AddCluster("Cluster 1", signedA)
+	mst.AddCluster("Cluster 2", signedB)
+
 	mst.MustCompile()
 
 	m := &testEntity{}
@@ -116,7 +119,7 @@ func TestMultistate_DoAction(t *testing.T) {
 
 	assert.Equal(t, uint64(61), m.state)
 
-	//ioutil.WriteFile("/tmp/graph.svg", []byte(mst.GetGraphSVG()), 0644)
+	// ioutil.WriteFile("/tmp/graph.svg", []byte(mst.GetGraphSVG()), 0644)
 }
 
 func TestMultistate_DoAction2(t *testing.T) {
@@ -204,5 +207,5 @@ func TestMultistate_DoAction2(t *testing.T) {
 
 	assert.Equal(t, uint64(32), m.state)
 
-	//ioutil.WriteFile("/tmp/graph_wo.svg", []byte(mst.GetGraphSVG()), 0644)
+	// ioutil.WriteFile("/tmp/graph_wo.svg", []byte(mst.GetGraphSVG()), 0644)
 }

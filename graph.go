@@ -17,7 +17,16 @@ import (
 func (m *Multistate) GetGraphSVG() string {
 	g := dot.NewGraph("Multistate")
 
-	nodes := make(map[uint64]*dot.Node)
+	nodes := map[uint64]*dot.Node{}
+	clusters := map[uint8]*dot.SubGraph{}
+
+	for _, cluster := range m.clusters {
+		c := dot.NewSubgraph(fmt.Sprintf("cluster_%d", cluster.id))
+		_ = c.Set("label", cluster.name)
+
+		clusters[cluster.id] = c
+		g.AddSubgraph(c)
+	}
 
 	for state := range m.statesActions {
 		var strFlags string
@@ -50,7 +59,12 @@ func (m *Multistate) GetGraphSVG() string {
 		_ = n.Set("label", fmt.Sprintf(`<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0"><TR><TD><B>%d</B></TD><TD>%s</TD></TR></TABLE>>`, state, strFlags))
 		_ = n.Set("color", color)
 		_ = n.Set("fontcolor", color)
-		g.AddNode(n)
+
+		if c := m.stateClusterMap[state]; c != nil {
+			clusters[c.id].AddNode(n)
+		} else {
+			g.AddNode(n)
+		}
 		nodes[state] = n
 	}
 
