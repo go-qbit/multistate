@@ -3,6 +3,7 @@ package multistate_test
 import (
 	"context"
 	"fmt"
+
 	"github.com/go-qbit/multistate"
 	. "github.com/go-qbit/multistate/expr"
 )
@@ -14,6 +15,13 @@ type ExampleImpl struct {
 	St2 multistate.State `bit:"1" caption:"State 2"`
 
 	// Here can be other data
+}
+
+// Define clusters
+func (i *ExampleImpl) Clusters() []multistate.Cluster {
+	return []multistate.Cluster{
+		{"test", i.St2},
+	}
 }
 
 // Global callback, will be called on each DoAction

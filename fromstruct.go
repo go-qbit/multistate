@@ -22,6 +22,11 @@ type Action struct {
 	OnDo        ActionDoFunc
 }
 
+type Cluster struct {
+	Caption string
+	Expr    expr.Expression
+}
+
 func NewFromStruct(s Implementation) *Multistate {
 	mst := New("New")
 
@@ -83,6 +88,15 @@ func NewFromStruct(s Implementation) *Multistate {
 				panic(fmt.Sprintf("OnDoAction must fit OnDoCallback type "))
 			}
 			mst.SetOnDoCallback(cb)
+		} else if mt.Name == "Clusters" {
+			values := rvS.Method(i).Call(nil)
+			clusters, ok := values[0].Interface().([]Cluster)
+			if !ok {
+				panic(fmt.Sprintf("The Clusters method must return the []multistate.Cluster type"))
+			}
+			for _, c := range clusters {
+				mst.AddCluster(c.Caption, c.Expr)
+			}
 		}
 	}
 
