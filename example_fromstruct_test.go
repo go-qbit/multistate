@@ -52,6 +52,7 @@ func (*ExampleEntity) StartAction(ctx context.Context) (context.Context, error) 
 func (*ExampleEntity) GetState(context.Context) (uint64, error)                 { return 0, nil }
 func (*ExampleEntity) SetState(context.Context, uint64, ...interface{}) error   { return nil }
 func (*ExampleEntity) EndAction(context.Context, error) error                   { return nil }
+func (*ExampleEntity) GetId() interface{}                                       { return 0 }
 
 func ExampleNewFromStruct() {
 	mst := multistate.NewFromStruct(&ExampleImpl{})

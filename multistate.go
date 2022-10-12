@@ -199,13 +199,13 @@ func (m *Multistate) MustCompile() {
 	}
 }
 
-func (m *Multistate) GetStateActions(ctx context.Context, state uint64) []string {
+func (m *Multistate) GetStateActions(ctx context.Context, state uint64, id interface{}) []string {
 	if actions, exists := m.statesActions[state]; exists {
 		res := make([]string, 0, len(actions))
 
 		for actionId := range actions {
 			action := m.actionsMap[actionId]
-			if action.isAvailable == nil || action.isAvailable(ctx) {
+			if action.isAvailable == nil || action.isAvailable(ctx, id) {
 				res = append(res, actionId)
 			}
 		}
@@ -244,7 +244,7 @@ func (m *Multistate) DoAction(ctx context.Context, entity Entity, action string,
 	}
 
 	if onAction := m.actionsMap[action].do; onAction != nil {
-		if err := onAction(ctx, entity, opts...); err != nil {
+		if err := onAction(ctx, entity.GetId(), opts...); err != nil {
 			return 0, entity.EndAction(ctx, fmt.Errorf("%s: %w", err.Error(), ErrExecutionAction))
 		}
 	}
