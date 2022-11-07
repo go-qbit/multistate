@@ -57,7 +57,7 @@ func ExampleNewFromStruct() {
 	mst := multistate.NewFromStruct(&ExampleImpl{})
 
 	e := &ExampleEntity{Id: 100}
-	_, err := mst.DoAction(context.Background(), e, "test")
+	_, err := mst.DoAction(context.Background(), e, 1, "test")
 	if err != nil {
 		panic(err)
 	}

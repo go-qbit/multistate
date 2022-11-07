@@ -71,8 +71,8 @@ func (m *Multistate) GetGraphSVG() string {
 	for from, actions := range m.statesActions {
 		for action, to := range actions {
 			e := dot.NewEdge(nodes[from], nodes[to])
-			if m.actionsMap[action].isAvailable != nil {
-				_ = e.Set("label", fmt.Sprintf("%s\n(%s[?])", m.actionsMap[action].caption, action))
+			if m.actionsMap[action].availabler != nil {
+				_ = e.Set("label", fmt.Sprintf("%s\n(%s[%s])", m.actionsMap[action].caption, action, m.actionsMap[action].availabler.String()))
 			} else {
 				_ = e.Set("label", fmt.Sprintf("%s\n(%s)", m.actionsMap[action].caption, action))
 			}

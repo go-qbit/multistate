@@ -83,7 +83,7 @@ func (m *Multistate) MustAddState(bit uint8, id, caption string) *state {
 	return s
 }
 
-func (m *Multistate) AddAction(id, caption string, from expr.Expression, set, reset States, onDo ActionDoFunc, isAvailable AvailableFunc) error {
+func (m *Multistate) AddAction(id, caption string, from expr.Expression, set, reset States, onDo ActionDoFunc, avail Availabler) error {
 	if !reStateAction.MatchString(id) {
 		return fmt.Errorf("invalid characters in action id '%s', must be %s", id, reStateAction.String())
 	}
@@ -93,13 +93,13 @@ func (m *Multistate) AddAction(id, caption string, from expr.Expression, set, re
 	}
 
 	a := &action{
-		id:          id,
-		caption:     caption,
-		from:        from,
-		set:         make([]uint64, len(set)),
-		reset:       make([]uint64, len(reset)),
-		do:          onDo,
-		isAvailable: isAvailable,
+		id:         id,
+		caption:    caption,
+		from:       from,
+		set:        make([]uint64, len(set)),
+		reset:      make([]uint64, len(reset)),
+		do:         onDo,
+		availabler: avail,
 	}
 
 	for i, s := range set {
@@ -123,8 +123,8 @@ func (m *Multistate) AddAction(id, caption string, from expr.Expression, set, re
 	return nil
 }
 
-func (m *Multistate) MustAddAction(id, caption string, from expr.Expression, set, reset []State, onDo ActionDoFunc, isAvailable AvailableFunc) {
-	if err := m.AddAction(id, caption, from, set, reset, onDo, isAvailable); err != nil {
+func (m *Multistate) MustAddAction(id, caption string, from expr.Expression, set, reset []State, onDo ActionDoFunc, avail Availabler) {
+	if err := m.AddAction(id, caption, from, set, reset, onDo, avail); err != nil {
 		panic(err)
 	}
 }
@@ -205,7 +205,7 @@ func (m *Multistate) GetStateActions(ctx context.Context, state uint64) []string
 
 		for actionId := range actions {
 			action := m.actionsMap[actionId]
-			if action.isAvailable == nil || action.isAvailable(ctx) {
+			if action.availabler == nil || action.availabler.IsAvailable(ctx) {
 				res = append(res, actionId)
 			}
 		}
@@ -216,7 +216,7 @@ func (m *Multistate) GetStateActions(ctx context.Context, state uint64) []string
 	return nil
 }
 
-func (m *Multistate) DoAction(ctx context.Context, entity Entity, action string, opts ...interface{}) (uint64, error) {
+func (m *Multistate) DoAction(ctx context.Context, entity Entity, id interface{}, action string, opts ...interface{}) (uint64, error) {
 	ctx, err := entity.StartAction(ctx)
 	if err != nil {
 		return 0, entity.EndAction(ctx, err)
@@ -244,7 +244,7 @@ func (m *Multistate) DoAction(ctx context.Context, entity Entity, action string,
 	}
 
 	if onAction := m.actionsMap[action].do; onAction != nil {
-		if err := onAction(ctx, entity, opts...); err != nil {
+		if err := onAction(ctx, id, opts...); err != nil {
 			return 0, entity.EndAction(ctx, fmt.Errorf("%s: %w", err.Error(), ErrExecutionAction))
 		}
 	}
