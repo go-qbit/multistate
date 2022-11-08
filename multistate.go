@@ -216,7 +216,7 @@ func (m *Multistate) GetStateActions(ctx context.Context, state uint64) []string
 	return nil
 }
 
-func (m *Multistate) DoAction(ctx context.Context, entity Entity, id interface{}, action string, opts ...interface{}) (uint64, error) {
+func (m *Multistate) DoAction(ctx context.Context, entity Entity, action string, opts ...interface{}) (uint64, error) {
 	ctx, err := entity.StartAction(ctx)
 	if err != nil {
 		return 0, entity.EndAction(ctx, err)
@@ -244,7 +244,7 @@ func (m *Multistate) DoAction(ctx context.Context, entity Entity, id interface{}
 	}
 
 	if onAction := m.actionsMap[action].do; onAction != nil {
-		if err := onAction(ctx, id, opts...); err != nil {
+		if err := onAction(ctx, entity, opts...); err != nil {
 			return 0, entity.EndAction(ctx, fmt.Errorf("%s: %w", err.Error(), ErrExecutionAction))
 		}
 	}
