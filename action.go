@@ -28,4 +28,5 @@ type Entity interface {
 	GetState(ctx context.Context) (uint64, error)
 	SetState(ctx context.Context, newState uint64, params ...interface{}) error
 	EndAction(ctx context.Context, err error) error
+	GetId() interface{}
 }

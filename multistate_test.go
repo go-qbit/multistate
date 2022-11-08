@@ -33,6 +33,10 @@ func (*testEntity) EndAction(ctx context.Context, err error) error {
 	return err
 }
 
+func (testEntity) GetId() interface{} {
+	return 0
+}
+
 func TestMultistate_DoAction(t *testing.T) {
 	mst := multistate.New("New")
 
