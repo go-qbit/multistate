@@ -10,8 +10,6 @@ import (
 	. "github.com/go-qbit/multistate/expr"
 )
 
-var testId = 1
-
 type testEntity struct {
 	state uint64
 }
@@ -34,7 +32,7 @@ func (*testEntity) EndAction(ctx context.Context, err error) error {
 }
 
 func (testEntity) GetId() interface{} {
-	return 0
+	return 1
 }
 
 func TestMultistate_DoAction(t *testing.T) {
@@ -108,19 +106,19 @@ func TestMultistate_DoAction(t *testing.T) {
 
 	m := &testEntity{}
 
-	_, err := mst.DoAction(context.Background(), m, testId, "sign_a")
+	_, err := mst.DoAction(context.Background(), m, "sign_a")
 	assert.NoError(t, err)
 
-	_, err = mst.DoAction(context.Background(), m, testId, "sign_c")
+	_, err = mst.DoAction(context.Background(), m, "sign_c")
 	assert.NoError(t, err)
 
-	_, err = mst.DoAction(context.Background(), m, testId, "sign_d")
+	_, err = mst.DoAction(context.Background(), m, "sign_d")
 	assert.NoError(t, err)
 
-	_, err = mst.DoAction(context.Background(), m, testId, "sign_e")
+	_, err = mst.DoAction(context.Background(), m, "sign_e")
 	assert.NoError(t, err)
 
-	_, err = mst.DoAction(context.Background(), m, testId, "sign_f")
+	_, err = mst.DoAction(context.Background(), m, "sign_f")
 	assert.NoError(t, err)
 
 	assert.Equal(t, uint64(61), m.state)
@@ -196,19 +194,19 @@ func TestMultistate_DoAction2(t *testing.T) {
 
 	m := &testEntity{}
 
-	_, err := mst.DoAction(context.Background(), m, testId, "sign_a")
+	_, err := mst.DoAction(context.Background(), m, "sign_a")
 	assert.NoError(t, err)
 
-	_, err = mst.DoAction(context.Background(), m, testId, "sign_c")
+	_, err = mst.DoAction(context.Background(), m, "sign_c")
 	assert.NoError(t, err)
 
-	_, err = mst.DoAction(context.Background(), m, testId, "sign_d")
+	_, err = mst.DoAction(context.Background(), m, "sign_d")
 	assert.NoError(t, err)
 
-	_, err = mst.DoAction(context.Background(), m, testId, "sign_e")
+	_, err = mst.DoAction(context.Background(), m, "sign_e")
 	assert.NoError(t, err)
 
-	_, err = mst.DoAction(context.Background(), m, testId, "sign_f")
+	_, err = mst.DoAction(context.Background(), m, "sign_f")
 	assert.NoError(t, err)
 
 	assert.Equal(t, uint64(32), m.state)
