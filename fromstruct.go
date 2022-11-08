@@ -14,12 +14,12 @@ import (
 type Implementation interface{}
 
 type Action struct {
-	Caption     string
-	From        expr.Expression
-	Set         States
-	Reset       States
-	IsAvailable AvailableFunc
-	OnDo        ActionDoFunc
+	Caption    string
+	From       expr.Expression
+	Set        States
+	Reset      States
+	OnDo       ActionDoFunc
+	Availabler Availabler
 }
 
 type Cluster struct {
@@ -81,7 +81,7 @@ func NewFromStruct(s Implementation) *Multistate {
 				action.From = expr.Empty()
 			}
 
-			mst.MustAddAction(camelCaseToSnake(mt.Name[6:]), caption, action.From, action.Set, action.Reset, action.OnDo, action.IsAvailable)
+			mst.MustAddAction(camelCaseToSnake(mt.Name[6:]), caption, action.From, action.Set, action.Reset, action.OnDo, action.Availabler)
 		} else if mt.Name == "OnDoAction" {
 			cb, ok := rvS.Method(i).Interface().(func(context.Context, Entity, uint64, uint64, string, ...interface{}) error)
 			if !ok {

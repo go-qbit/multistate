@@ -7,16 +7,19 @@ import (
 )
 
 type action struct {
-	id          string
-	caption     string
-	from        expr.Expression
-	set         []uint64
-	reset       []uint64
-	do          ActionDoFunc
-	isAvailable AvailableFunc
+	id         string
+	caption    string
+	from       expr.Expression
+	set        []uint64
+	reset      []uint64
+	do         ActionDoFunc
+	availabler Availabler
 }
 
-type AvailableFunc func(ctx context.Context) bool
+type Availabler interface {
+	String() string
+	IsAvailable(ctx context.Context) bool
+}
 
 type ActionDoFunc func(ctx context.Context, id interface{}, opts ...interface{}) error
 
@@ -25,4 +28,5 @@ type Entity interface {
 	GetState(ctx context.Context) (uint64, error)
 	SetState(ctx context.Context, newState uint64, params ...interface{}) error
 	EndAction(ctx context.Context, err error) error
+	GetId() interface{}
 }

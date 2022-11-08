@@ -26,7 +26,7 @@ func (i *ExampleImpl) Clusters() []multistate.Cluster {
 
 // Global callback, will be called on each DoAction
 func (i *ExampleImpl) OnDoAction(ctx context.Context, entity multistate.Entity, prevState, newState uint64, action string, opts ...interface{}) error {
-	fmt.Printf("[%d]: %d -> %s -> %d", entity.(*ExampleEntity).Id, prevState, action, newState)
+	fmt.Printf("[%d]: %d -> %s -> %d", entity.GetId(), prevState, action, newState)
 	return nil
 }
 
@@ -52,6 +52,7 @@ func (*ExampleEntity) StartAction(ctx context.Context) (context.Context, error) 
 func (*ExampleEntity) GetState(context.Context) (uint64, error)                 { return 0, nil }
 func (*ExampleEntity) SetState(context.Context, uint64, ...interface{}) error   { return nil }
 func (*ExampleEntity) EndAction(context.Context, error) error                   { return nil }
+func (e *ExampleEntity) GetId() interface{}                                     { return e.Id }
 
 func ExampleNewFromStruct() {
 	mst := multistate.NewFromStruct(&ExampleImpl{})
