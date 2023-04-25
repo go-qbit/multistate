@@ -7,4 +7,5 @@ var (
 	ErrInvalidAction   = errors.New("invalid_action_error")
 	ErrExecutionAction = errors.New("execute_action_error")
 	ErrSetState        = errors.New("set_state_error")
+	ErrNotAvailable    = errors.New("action_not_available_error")
 )
