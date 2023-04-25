@@ -237,7 +237,7 @@ func (m *Multistate) DoAction(ctx context.Context, entity Entity, action string,
 		return 0, entity.EndAction(ctx, fmt.Errorf("action '%s', current state %d: %w", action, curState, ErrInvalidAction))
 	}
 
-	if !m.actionsMap[action].availabler.IsAvailable(ctx) {
+	if avail := m.actionsMap[action].availabler; avail != nil && !avail.IsAvailable(ctx) {
 		return 0, entity.EndAction(ctx, fmt.Errorf("action '%s', current state %d: %w", action, curState, ErrNotAvailable))
 	}
 
