@@ -237,6 +237,10 @@ func (m *Multistate) DoAction(ctx context.Context, entity Entity, action string,
 		return 0, entity.EndAction(ctx, fmt.Errorf("action '%s', current state %d: %w", action, curState, ErrInvalidAction))
 	}
 
+	if !m.actionsMap[action].availabler.IsAvailable(ctx) {
+		return 0, entity.EndAction(ctx, fmt.Errorf("action '%s', current state %d: %w", action, curState, ErrNotAvailable))
+	}
+
 	if m.onDo != nil {
 		if err := m.onDo(ctx, entity, curState, newState, action, opts...); err != nil {
 			return 0, entity.EndAction(ctx, fmt.Errorf("%s: %w", err.Error(), ErrExecutionAction))
