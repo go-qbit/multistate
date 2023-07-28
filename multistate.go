@@ -184,7 +184,7 @@ func (m *Multistate) Compile() error {
 				continue
 			}
 			if c, exists := m.stateClusterMap[state]; exists {
-				return fmt.Errorf("The state %d exists at least in 2 clusters: %s and %s", state, c.name, cluster.name)
+				return fmt.Errorf("the state %d exists at least in 2 clusters: %s and %s", state, c.name, cluster.name)
 			}
 			m.stateClusterMap[state] = &m.clusters[i]
 		}
@@ -243,18 +243,18 @@ func (m *Multistate) DoAction(ctx context.Context, entity Entity, action string,
 
 	if m.onDo != nil {
 		if err := m.onDo(ctx, entity, curState, newState, action, opts...); err != nil {
-			return 0, entity.EndAction(ctx, fmt.Errorf("%s: %w", err.Error(), ErrExecutionAction))
+			return 0, entity.EndAction(ctx, fmt.Errorf("%s: %w", err, ErrExecutionAction))
 		}
 	}
 
 	if onAction := m.actionsMap[action].do; onAction != nil {
 		if err := onAction(ctx, entity, opts...); err != nil {
-			return 0, entity.EndAction(ctx, fmt.Errorf("%s: %w", err.Error(), ErrExecutionAction))
+			return 0, entity.EndAction(ctx, fmt.Errorf("%s: %w", err, ErrExecutionAction))
 		}
 	}
 
 	if err := entity.SetState(ctx, newState); err != nil {
-		return 0, entity.EndAction(ctx, fmt.Errorf("%s: %w", err.Error(), ErrSetState))
+		return 0, entity.EndAction(ctx, fmt.Errorf("%s: %w", err, ErrSetState))
 	}
 
 	return newState, entity.EndAction(ctx, nil)
