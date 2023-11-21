@@ -243,18 +243,18 @@ func (m *Multistate) DoAction(ctx context.Context, entity Entity, action string,
 
 	if m.onDo != nil {
 		if err := m.onDo(ctx, entity, curState, newState, action, opts...); err != nil {
-			return 0, entity.EndAction(ctx, fmt.Errorf("%s: %w", ErrExecutionAction.Error(), err))
+			return 0, entity.EndAction(ctx, fmt.Errorf("%w: %w", ErrExecutionAction, err))
 		}
 	}
 
 	if onAction := m.actionsMap[action].do; onAction != nil {
 		if err := onAction(ctx, entity, opts...); err != nil {
-			return 0, entity.EndAction(ctx, fmt.Errorf("%s: %w", ErrExecutionAction.Error(), err))
+			return 0, entity.EndAction(ctx, fmt.Errorf("%w: %w", ErrExecutionAction, err))
 		}
 	}
 
 	if err := entity.SetState(ctx, newState); err != nil {
-		return 0, entity.EndAction(ctx, fmt.Errorf("%s: %w", ErrSetState.Error(), err))
+		return 0, entity.EndAction(ctx, fmt.Errorf("%w: %w", ErrSetState, err))
 	}
 
 	return newState, entity.EndAction(ctx, nil)
