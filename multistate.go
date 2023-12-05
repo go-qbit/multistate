@@ -260,6 +260,24 @@ func (m *Multistate) DoAction(ctx context.Context, entity Entity, action string,
 	return newState, entity.EndAction(ctx, nil)
 }
 
+func (m *Multistate) GetAllStateFlags() []StateFlag {
+	res := make([]StateFlag, 0, len(m.statesMap))
+
+	for _, state := range m.statesMap {
+		res = append(res, StateFlag{
+			Id:      state.id,
+			Bit:     state.bit,
+			Caption: state.caption,
+		})
+	}
+
+	sort.Slice(res, func(i, j int) bool {
+		return res[i].Bit < res[j].Bit
+	})
+
+	return res
+}
+
 func (m *Multistate) GetStateFlags(id uint64) []StateFlag {
 	if id == 0 {
 		return []StateFlag{}
