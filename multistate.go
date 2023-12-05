@@ -326,22 +326,16 @@ func (m *Multistate) GetStatesByActions(actions ...string) []uint64 {
 }
 
 func (m *Multistate) GetMultistatesByStateIds(stateIds ...string) []uint64 {
-	bits := make([]uint8, 0, len(stateIds))
+	var bitmask uint64
 
 	for _, id := range stateIds {
 		if st, ok := m.statesMap[id]; ok {
-			bits = append(bits, st.bit)
+			bitmask |= 1 << st.bit
 		}
 	}
 
-	var bitmask uint64
-	for _, bit := range bits {
-		bitmask |= 1 << bit
-	}
+	var ret []uint64
 
-	set := make(map[uint64]struct{})
-
-	ret := make([]uint64, 0, len(set))
 	for multistate := range m.statesActions {
 		if multistate&bitmask != 0 {
 			ret = append(ret, multistate)
