@@ -260,6 +260,24 @@ func (m *Multistate) DoAction(ctx context.Context, entity Entity, action string,
 	return newState, entity.EndAction(ctx, nil)
 }
 
+func (m *Multistate) GetAllStateFlags() []StateFlag {
+	res := make([]StateFlag, 0, len(m.statesMap))
+
+	for _, state := range m.statesMap {
+		res = append(res, StateFlag{
+			Id:      state.id,
+			Bit:     state.bit,
+			Caption: state.caption,
+		})
+	}
+
+	sort.Slice(res, func(i, j int) bool {
+		return res[i].Bit < res[j].Bit
+	})
+
+	return res
+}
+
 func (m *Multistate) GetStateFlags(id uint64) []StateFlag {
 	if id == 0 {
 		return []StateFlag{}
@@ -319,6 +337,27 @@ func (m *Multistate) GetStatesByActions(actions ...string) []uint64 {
 	ret := make([]uint64, 0, len(set))
 	for el := range set {
 		ret = append(ret, el)
+	}
+	sort.Slice(ret, func(i, j int) bool { return ret[i] < ret[j] })
+
+	return ret
+}
+
+func (m *Multistate) GetMultistatesByStateIds(stateIds ...string) []uint64 {
+	var bitmask uint64
+
+	for _, id := range stateIds {
+		if st, ok := m.statesMap[id]; ok {
+			bitmask |= 1 << st.bit
+		}
+	}
+
+	var ret []uint64
+
+	for multistate := range m.statesActions {
+		if multistate&bitmask != 0 {
+			ret = append(ret, multistate)
+		}
 	}
 	sort.Slice(ret, func(i, j int) bool { return ret[i] < ret[j] })
 
