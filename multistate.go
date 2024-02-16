@@ -363,3 +363,44 @@ func (m *Multistate) GetMultistatesByStateIds(stateIds ...string) []uint64 {
 
 	return ret
 }
+
+type Connection struct {
+	From   uint64
+	To     uint64
+	Action string
+}
+
+type Connections []Connection
+
+func (cs Connections) Len() int      { return len(cs) }
+func (cs Connections) Swap(i, j int) { cs[i], cs[j] = cs[j], cs[i] }
+func (cs Connections) Less(i, j int) bool {
+	if cs[i].From != cs[j].From {
+		return cs[i].From < cs[j].From
+	}
+	return cs[i].To < cs[j].To
+}
+
+func (cs Connections) String() string {
+	res := make([]string, 0, len(cs))
+	for _, c := range cs {
+		res = append(res, fmt.Sprintf("%v -> %v; %s", c.From, c.To, c.Action))
+	}
+	return strings.Join(res, "\n")
+}
+
+func (m *Multistate) GetConnections() Connections {
+	var res Connections
+	for from, actions := range m.statesActions {
+		for action, to := range actions {
+			c := Connection{
+				From:   from,
+				To:     to,
+				Action: action,
+			}
+			res = append(res, c)
+		}
+	}
+	sort.Sort(res)
+	return res
+}
