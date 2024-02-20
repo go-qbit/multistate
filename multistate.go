@@ -386,7 +386,7 @@ func (m *Multistate) GetConnections() []Connection {
 		if res[i].From != res[j].From {
 			return res[i].From < res[j].From
 		}
-		if res[i].To != res[i].To {
+		if res[i].To != res[j].To {
 			return res[i].To < res[j].To
 		}
 		return res[i].Action < res[j].Action
