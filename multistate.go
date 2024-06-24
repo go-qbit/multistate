@@ -364,6 +364,39 @@ func (m *Multistate) GetMultistatesByStateIds(stateIds ...string) []uint64 {
 	return ret
 }
 
+func (m *Multistate) GetMultistatesByRequiredAndForbiddenStateIds(reqIds, forbIds []string) ([]uint64, error) {
+	var requiredBitmask, forbiddenBitmask uint64
+
+	for _, id := range reqIds {
+		st, ok := m.statesMap[id]
+		if !ok {
+			return nil, fmt.Errorf("state id '%s': %w", id, ErrInvalidState)
+		}
+
+		requiredBitmask |= 1 << st.bit
+	}
+
+	for _, id := range forbIds {
+		st, ok := m.statesMap[id]
+		if !ok {
+			return nil, fmt.Errorf("state id '%s': %w", id, ErrInvalidState)
+		}
+
+		forbiddenBitmask |= 1 << st.bit
+	}
+
+	var ret []uint64
+
+	for multistate := range m.statesActions {
+		if multistate&requiredBitmask == requiredBitmask && multistate&forbiddenBitmask == 0 {
+			ret = append(ret, multistate)
+		}
+	}
+	sort.Slice(ret, func(i, j int) bool { return ret[i] < ret[j] })
+
+	return ret, nil
+}
+
 type Connection struct {
 	From   uint64
 	To     uint64
