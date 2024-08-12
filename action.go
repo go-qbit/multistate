@@ -21,7 +21,7 @@ type Availabler interface {
 	IsAvailable(ctx context.Context) bool
 }
 
-type ActionDoFunc func(ctx context.Context, id interface{}, opts ...interface{}) error
+type ActionDoFunc func(ctx context.Context, entity Entity, opts ...interface{}) error
 
 type Entity interface {
 	StartAction(ctx context.Context) (context.Context, error)
@@ -29,4 +29,5 @@ type Entity interface {
 	SetState(ctx context.Context, newState uint64, params ...interface{}) error
 	EndAction(ctx context.Context, err error) error
 	GetId() interface{}
+	GetTx() interface{}
 }

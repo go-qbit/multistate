@@ -37,7 +37,7 @@ func (i *ExampleImpl) ActionTest() multistate.Action {
 		From:    Any(),
 		Set:     multistate.States{i.St2},
 		Reset:   nil,
-		OnDo: func(ctx context.Context, id interface{}, opts ...interface{}) error {
+		OnDo: func(ctx context.Context, entity multistate.Entity, opts ...interface{}) error {
 			return nil
 		},
 	}
@@ -53,6 +53,7 @@ func (*ExampleEntity) GetState(context.Context) (uint64, error)                 
 func (*ExampleEntity) SetState(context.Context, uint64, ...interface{}) error   { return nil }
 func (*ExampleEntity) EndAction(context.Context, error) error                   { return nil }
 func (e *ExampleEntity) GetId() interface{}                                     { return e.Id }
+func (*ExampleEntity) GetTx() interface{}                                       { return nil }
 
 func ExampleNewFromStruct() {
 	mst := multistate.NewFromStruct(&ExampleImpl{})
