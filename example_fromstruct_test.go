@@ -37,7 +37,7 @@ func (i *ExampleImpl) ActionTest() multistate.Action {
 		From:    Any(),
 		Set:     multistate.States{i.St2},
 		Reset:   nil,
-		OnDo: func(ctx context.Context, id interface{}, opts ...interface{}) error {
+		OnDo: func(ctx context.Context, entity multistate.Entity, opts ...interface{}) error {
 			return nil
 		},
 	}
