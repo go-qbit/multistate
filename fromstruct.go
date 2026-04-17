@@ -27,8 +27,8 @@ type Cluster struct {
 	Expr    expr.Expression
 }
 
-func NewFromStruct(s Implementation) *Multistate {
-	mst := New("New")
+func NewFromStructWithEmptyName(s Implementation, emptyStateName string) *Multistate {
+	mst := New(emptyStateName)
 
 	rtS := reflect.TypeOf(s)
 	rvS := reflect.ValueOf(s)
@@ -103,6 +103,10 @@ func NewFromStruct(s Implementation) *Multistate {
 	mst.MustCompile()
 
 	return mst
+}
+
+func NewFromStruct(s Implementation) *Multistate {
+	return NewFromStructWithEmptyName(s, "New")
 }
 
 var matchFirstCap = regexp.MustCompile("(.)([A-Z][a-z]+)")
